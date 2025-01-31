@@ -12,8 +12,8 @@
             <!-- Header Section -->
             <header class="max-w-4xl mx-auto mb-8">
                 <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    <router-link to="/blogs" class="hover:text-blue-500">
-                        ← Back to Blogs
+                    <router-link to="/blog" class="hover:text-blue-500">
+                        ← Back to Blog
                     </router-link>
                 </div>
                 <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -51,13 +51,13 @@
             </header>
 
             <!-- Featured Image -->
-            <div class="max-w-4xl mx-auto mb-12">
+            <!-- <div class="max-w-4xl mx-auto mb-12">
                 <img :src="blog.image" :alt="blog.title" class="w-full h-[400px] object-cover rounded-xl shadow-lg" />
-            </div>
+            </div> -->
 
             <!-- Blog Content -->
             <div class="max-w-3xl mx-auto">
-                <div class="prose dark:prose-invert prose-lg max-w-none">
+                <div class="prose dark:prose-invert prose-lg dark:text-white max-w-none">
                     {{ blog.content }}
                 </div>
 
@@ -78,7 +78,7 @@
             </div>
 
             <!-- Related Posts -->
-            <div class="max-w-4xl mx-auto mt-16">
+            <div class="max-w-4xl mx-auto mt-10">
                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                     Related Posts
                 </h2>

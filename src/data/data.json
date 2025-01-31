@@ -6,7 +6,6 @@
         "author": "Jane Smith",
         "date": "2025-01-15",
         "category": "Vue",
-        "image": "/images/vue-composition.jpg",
         "excerpt": "Learn how to leverage the power of Vue 3's Composition API to write more maintainable and scalable applications.",
         "content": "The Composition API is a revolutionary feature in Vue 3 that provides a more flexible way to organize component logic. In this post, we'll explore how to use refs, reactive, computed properties, and more...",
         "tags": ["Vue", "JavaScript", "Web Development"]
@@ -17,7 +16,6 @@
         "author": "John Doe",
         "date": "2025-01-18",
         "category": "CSS",
-        "image": "/images/tailwind.jpg",
         "excerpt": "Discover how to build beautiful, responsive interfaces quickly using Tailwind CSS utility classes.",
         "content": "Tailwind CSS has revolutionized the way we style web applications. Instead of writing custom CSS, we can use utility classes to rapidly build user interfaces...",
         "tags": ["CSS", "Tailwind", "Web Design"]
@@ -28,7 +26,6 @@
         "author": "Alice Johnson",
         "date": "2025-01-20",
         "category": "JavaScript",
-        "image": "/images/javascript.jpg",
         "excerpt": "Explore the latest JavaScript features that will make your code more elegant and efficient.",
         "content": "JavaScript is constantly evolving, and staying up to date with the latest features can significantly improve your code quality. Let's explore some modern JavaScript features...",
         "tags": ["JavaScript", "ES6", "Programming"]
@@ -39,7 +36,6 @@
         "author": "Bob Wilson",
         "date": "2025-01-22",
         "category": "Backend",
-        "image": "/images/nodejs.jpg",
         "excerpt": "Learn how to create robust and scalable REST APIs using Node.js and Express.",
         "content": "Node.js is an excellent choice for building REST APIs. In this tutorial, we'll walk through creating a complete API with authentication, validation, and error handling...",
         "tags": ["Node.js", "API", "Backend"]
@@ -50,7 +46,6 @@
         "author": "Sarah Brown",
         "date": "2025-01-25",
         "category": "Vue",
-        "image": "/images/pinia.jpg",
         "excerpt": "Discover why Pinia is becoming the preferred state management solution for Vue applications.",
         "content": "Pinia offers a simpler and more intuitive approach to state management compared to Vuex. Let's explore how to implement Pinia in your Vue applications...",
         "tags": ["Vue", "Pinia", "State Management"]

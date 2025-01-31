@@ -1,7 +1,7 @@
 <template>
     <article
         class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-        <img :src="blog.image" :alt="blog.title" class="w-full h-48 object-cover">
+        <!-- <img :src="blog.image" :alt="blog.title" class="w-full h-48 object-cover"> -->
         <div class="p-6">
             <div class="flex items-center mb-3">
                 <span

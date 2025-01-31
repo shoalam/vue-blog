@@ -1,7 +1,7 @@
 <template>
   <main>
     <!-- Banner Section -->
-    <section class="dark:bg-gray-800 bg-gradient-to-r from-blue-500 to-purple-600 text-white py-20">
+    <section class="dark:bg-gray-700 dark:text-white bg-white py-20">
       <div class="container mx-auto px-4 text-center">
         <h1 class="text-4xl md:text-6xl font-bold mb-4">Welcome to Our Blog</h1>
         <p class="text-xl mb-8">Discover amazing stories and insights</p>
