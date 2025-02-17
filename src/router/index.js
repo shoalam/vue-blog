@@ -34,7 +34,7 @@ const router = createRouter({
     },
     {
       path: "/auth/register",
-      name: "BlogDetails",
+      name: "register",
       component: () => import("../views/auth/Register.vue"),
     },
   ],
