@@ -1,34 +1,40 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes: [
     // Public Routes
     {
       path: "/",
-      name: "home",
-      component: () => import("../views/HomeView.vue"),
-    },
-    {
-      path: "/about",
-      name: "about",
-      component: () => import("../views/AboutView.vue"),
-    },
-    {
-      path: "/blog",
-      name: "blog",
-      component: () => import("../views/BlogView.vue"),
-    },
-    {
-      path: "/blog/:id",
-      name: "BlogDetails",
-      component: () => import("../views/BlogDetails.vue"),
-    },
+      component: () => import("@/components/layouts/MainLayout.vue"),
+      children: [
+        {
+          path: "",
+          name: "home",
+          component: () => import("../views/HomeView.vue"),
+        },
+        {
+          path: "/about",
+          name: "about",
+          component: () => import("../views/AboutView.vue"),
+        },
+        {
+          path: "/blog",
+          name: "blog",
+          component: () => import("../views/BlogView.vue"),
+        },
+        {
+          path: "/blog/:id",
+          name: "BlogDetails",
+          component: () => import("../views/BlogDetails.vue"),
+        },
 
-    {
-      path: "/contact",
-      name: "contact",
-      component: () => import("../views/ContactUsView.vue"),
+        {
+          path: "/contact",
+          name: "contact",
+          component: () => import("../views/ContactUsView.vue"),
+        },
+      ],
     },
 
     // Auth Routes
@@ -51,7 +57,7 @@ const router = createRouter({
     // Dashboard Routes
     {
       path: "/dashboard",
-      component: () => import("../components/layouts/DashboardLayout.vue"),
+      component: () => import("@/components/layouts/DashboardLayout.vue"),
       // meta: { requiresAuth: true },
       children: [
         {
