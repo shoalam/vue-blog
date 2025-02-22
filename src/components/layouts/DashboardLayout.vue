@@ -12,6 +12,7 @@
             <main class="flex-1 p-6">
                 <router-view />
             </main>
+            <Footer />
         </div>
     </div>
 </template>
@@ -20,6 +21,7 @@
 import { ref, computed } from 'vue';
 import Sidebar from '../dashboard/Sidebar.vue';
 import Header from '../dashboard/Header.vue';
+import Footer from '../dashboard/Footer.vue';
 
 // State
 const isSidebarOpen = ref(true);

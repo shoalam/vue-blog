@@ -7,8 +7,8 @@
                 <!-- Logo -->
                 <div class="p-4 border-b dark:border-gray-700">
                     <router-link to="/" class="flex items-center space-x-2">
-                        <img src="@/assets/logo.svg" alt="Logo" class="w-8 h-8">
-                        <span class="text-xl font-bold text-gray-800 dark:text-white">Blog CMS</span>
+                        <img src="@/assets/logo.svg" alt="Logo" class="w-6 h-6">
+                        <span class="text-lg font-bold text-gray-800 dark:text-white">Blog CMS</span>
                     </router-link>
                 </div>
 
