@@ -7,7 +7,7 @@ export const getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find();
 
   if (users.length === 0) {
-    return res.status(404).json({ message: "No users found" });
+    return res.status(404).json({ message: "No user found" });
   }
   res.json(users);
 });
@@ -27,8 +27,7 @@ export const getSingleUser = asyncHandler(async (req, res) => {
 //create a new user - - api/v1/users
 
 export const createUser = asyncHandler(async (req, res) => {
-  const { name, email, phone, password, gender, age, photo, status, trash } =
-    req.body;
+  const { name, email, password, role, image } = req.body;
 
   const existingUser = await User.findOne({ email });
 
@@ -36,8 +35,12 @@ export const createUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User already exists" });
   }
 
-  if (!name || !email || !password || !gender || !age) {
-    return res.status(400).json({ message: "All fields are required" });
+  if (!name) {
+    return res.status(400).json({ message: "Name is required" });
+  } else if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  } else if (!password) {
+    return res.status(400).json({ message: "Password is required" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -45,13 +48,9 @@ export const createUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     name,
     email,
-    phone,
     password: hashedPassword,
-    gender,
-    age,
-    photo,
-    status,
-    trash,
+    role,
+    image,
   });
 
   if (!user) {
@@ -77,28 +76,24 @@ export const deleteUser = asyncHandler(async (req, res) => {
 
 export const updateUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, email, phone, password, gender, age, photo, status, trash } =
-    req.body;
+  const { name, email, role, image } = req.body;
 
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
     return res.status(400).json({ message: "Email can not be updated" });
   }
-  if (!name || !gender || !age) {
-    return res.status(400).json({ message: "All fields are required" });
+
+  if (!name) {
+    return res.status(400).json({ message: "Name is required" });
   }
 
   const updatedUser = await User.findByIdAndUpdate(
     id,
     {
       name,
-      phone,
-      gender,
-      age,
-      photo,
-      status,
-      trash,
+      role,
+      image,
     },
     { new: true }
   );

@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import userRoutes from "./routes/user.js";
+import authRoutes from "./routes/auth.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { mongoDBConnect } from "./config/db.js";
 
@@ -18,6 +19,9 @@ app.use(express.urlencoded({ extended: false }));
 
 // users routes
 app.use("/api/v1/users", userRoutes);
+
+// auth routes
+app.use("/api/v1/auth", authRoutes);
 
 // Middleware for error handling
 app.use(errorHandler);

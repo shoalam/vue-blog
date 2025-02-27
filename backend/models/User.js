@@ -13,36 +13,19 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    phone: {
-      type: String,
-      trim: true,
-      default: null,
-    },
     password: {
       type: String,
       trim: true,
       required: true,
     },
-    gender: {
+    role: {
       type: String,
-      trim: true,
-      enum: ["male", "female"],
+      enum: ["author", "admin"],
+      default: "author",
     },
-    age: {
-      type: Number,
-      required: true,
-    },
-    photo: {
+    image: {
       type: String,
       default: null,
-    },
-    sttaus: {
-      type: Boolean,
-      default: true,
-    },
-    trash: {
-      type: Boolean,
-      default: false,
     },
   },
   {
