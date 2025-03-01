@@ -1,50 +1,33 @@
 <template lang="">
-     <!-- Sidebar -->
-     <aside
-            class="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-200 ease-in-out"
-            >
-            <div class="flex flex-col h-full">
-                <!-- Logo -->
-                <div class="p-4 border-b dark:border-gray-700">
-                    <router-link to="/" class="flex items-center space-x-2">
-                        <img src="@/assets/logo.svg" alt="Logo" class="w-6 h-6">
-                        <span class="text-lg font-bold text-gray-800 dark:text-white">Blog CMS</span>
-                    </router-link>
-                </div>
+  <!-- Sidebar -->
+  <aside
+    class="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-200 ease-in-out"
+  >
+    <div class="flex flex-col h-full">
+      <!-- Logo -->
+      <div class="p-4 border-b dark:border-gray-700">
+        <router-link to="/" class="flex items-center space-x-2">
+          <img src="@/assets/logo.svg" alt="Logo" class="w-6 h-6" />
+          <span class="text-lg font-bold text-gray-800 dark:text-white"
+            >Blog CMS</span
+          >
+        </router-link>
+      </div>
 
-                <!-- Navigation -->
-                <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-                    <!-- Dashboard -->
-                    <router-link to="/dashboard"
-                        class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <!-- <span class="material-icons mr-3">dashboard</span> -->
-                        Dashboard
-                    </router-link>
+      <!-- Navigation -->
+      <nav class="flex-1 space-y-2 overflow-y-auto">
+        <a-menu
+          v-model:openKeys="openKeys"
+          v-model:selectedKeys="selectedKeys"
+          style="width: 256px"
+          mode="inline"
+          :theme="theme"
+          :items="items"
+        />
+    </nav>
 
-                    <!-- Blogs -->
-                    <router-link to="/dashboard/blogs"
-                        class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <!-- <span class="material-icons mr-3">article</span> -->
-                        My Blogs
-                    </router-link>
-
-                    <!-- Users (Super Admin Only) -->
-                    <!-- <router-link  to="/dashboard/users"
-                        class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <span class="material-icons mr-3">people</span>
-                        Manage Users
-                    </router-link> -->
-
-                    <!-- Categories (Super Admin Only) -->
-                    <!-- <router-link to="/dashboard/categories"
-                        class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <span class="material-icons mr-3">category</span>
-                        Categories
-                    </router-link> -->
-                </nav>
-
-                <!-- User Profile -->
-                <!-- <div class="p-4 border-t dark:border-gray-700">
+<!-- User Profile -->
+<!-- <div class="p-4 border-t dark:border-gray-700">
                     <div class="flex items-center space-x-3">
                         <img :src="user.avatar || '/default-avatar.png'" alt="User avatar"
                             class="w-10 h-10 rounded-full">
@@ -54,14 +37,64 @@
                         </div>
                     </div>
                 </div> -->
-            </div>
-        </aside>
+</div>
+</aside>
 </template>
-<script>
-export default {
+<script setup>
+import { h, ref } from "vue";
+import { RouterLink } from "vue-router";
+import {
+  DashboardOutlined,
+  FileTextOutlined,
+  UserOutlined,
+} from "@ant-design/icons-vue";
 
-}
+const theme = ref("light");
+const selectedKeys = ref(["dashboard"]);
+const openKeys = ref(["manage-posts"]);
+
+const items = ref([
+  {
+    key: "dashboard",
+    icon: h(DashboardOutlined),
+    label: h(RouterLink, { to: "/dashboard" }, () => "Dashboard"),
+    title: "Dashboard",
+  },
+  {
+    key: "manage-posts",
+    icon: h(FileTextOutlined),
+    label: "Manage Posts",
+    title: "Manage Posts",
+    children: [
+      {
+        key: "add-post",
+        label: h(RouterLink, { to: "/dashboard/blogs/create" }, () => "Add Post"),
+        title: "Add Post",
+      },
+      {
+        key: "post-list",
+        label: h(RouterLink, { to: "/dashboard/blogs" }, () => "Post List"),
+        title: "Post List",
+      },
+      {
+        key: "edit-post",
+        label: h(RouterLink, { to: `/dashboard/blogs/edit/` }, () => "Edit Post"),
+        title: "Edit Post",
+      },
+    ],
+  },
+  {
+    key: "users-list",
+    icon: h(UserOutlined),
+    label: h(RouterLink, { to: "/users" }, () => "Users List"),
+    title: "Users List",
+  },
+]);
+
+const changeTheme = (checked) => {
+  theme.value = checked ? "dark" : "light";
+};
+
+
 </script>
-<style lang="">
-
-</style>
+<style lang=""></style>

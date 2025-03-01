@@ -14,22 +14,18 @@
         >
           Logout
         </button>
-        <a-space wrap>
-          <a-button type="primary">Primary Button</a-button>
-          <a-button>Default Button</a-button>
-          <a-button type="dashed">Dashed Button</a-button>
-          <a-button type="text">Text Button</a-button>
-          <a-button type="link">Link Button</a-button>
-        </a-space>
         <a-badge count="5">
-          <a-avatar shape="square" size="large" />
+          <a-avatar shape="square" size="large">
+            <UserOutlined />
+          </a-avatar>
         </a-badge>
       </div>
     </div>
   </header>
 </template>
-<script>
+
+<script setup>
 import { UserOutlined } from "@ant-design/icons-vue";
-export default {};
+
 </script>
 <style lang=""></style>
