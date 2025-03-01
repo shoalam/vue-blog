@@ -1,27 +1,31 @@
 // components/blog/BlogList.vue
 <template>
     <div>
-        <h2>Blog Posts</h2>
-        <a-table :columns="columns" :data-source="blogPosts" :row-key="record => record.id">
-            <template #headerCell="{ column }">
-                <template v-if="column.key === 'action'">
-                    <span>Action</span>
+        <a-card>
+            <div class="flex flex-wrap justify-between gap-6 mb-6">
+                <h2 class="text-4xl font-bold text-black">All Blog Posts</h2>
+                <a-input v-model:value="searchQuery" placeholder="Search by Post Title" style="width: 300px"
+                    @change="handleSearch" />
+            </div>
+            <!-- Recent Posts Table -->
+            <a-table :columns="columns" :data-source="blogPosts" :pagination="pagination" rowKey="id" bordered>
+                <template #bodyCell="{ column, record }">
+                    <template v-if="column.dataIndex === 'title'">
+                        <RouterLink :to="`/post/${record.id}`" class="text-blue-500">
+                            {{ record.title }}
+                        </RouterLink>
+                    </template>
+                    <template v-if="column.dataIndex === 'status'">
+                        <a-tag :color="record.status === 'Published' ? 'green' : 'orange'">
+                            {{ record.status }}
+                        </a-tag>
+                    </template>
+                    <template v-if="column.dataIndex === 'views'">
+                        {{ record.views }}
+                    </template>
                 </template>
-            </template>
-
-            <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'action'">
-                    <a-space>
-                        <a-button type="primary" size="small" @click="editBlog(record)">
-                            Edit
-                        </a-button>
-                        <a-button type="danger" size="small" @click="deleteBlog(record)">
-                            Delete
-                        </a-button>
-                    </a-space>
-                </template>
-            </template>
-        </a-table>
+            </a-table>
+        </a-card>
     </div>
 </template>
 
