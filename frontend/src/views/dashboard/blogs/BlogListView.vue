@@ -1,4 +1,4 @@
-// components/blog/BlogList.vue
+<!-- eslint-disable vue -->
 <template>
     <div>
         <a-card>
