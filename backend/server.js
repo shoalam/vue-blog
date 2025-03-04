@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import userRoutes from "./routes/user.js";
 import authRoutes from "./routes/auth.js";
+import postRoutes from "./routes/post.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { mongoDBConnect } from "./config/db.js";
 
@@ -22,6 +23,9 @@ app.use("/api/v1/users", userRoutes);
 
 // auth routes
 app.use("/api/v1/auth", authRoutes);
+
+//post routes
+app.use("/api/v1/posts", postRoutes);
 
 // Middleware for error handling
 app.use(errorHandler);
