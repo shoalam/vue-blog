@@ -30,53 +30,43 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { message } from 'ant-design-vue';
 
+const blogPosts = ref([]);
+const searchQuery = ref("");
+const pagination = { pageSize: 5 };
+
 const columns = [
-    {
-        title: 'Title',
-        dataIndex: 'title',
-        key: 'title',
-    },
-    {
-        title: 'Category',
-        dataIndex: 'category',
-        key: 'category',
-    },
-    {
-        title: 'Author',
-        dataIndex: 'author',
-        key: 'author',
-    },
-    {
-        title: 'Created At',
-        dataIndex: 'createdAt',
-        key: 'createdAt',
-    },
-    {
-        title: 'Action',
-        key: 'action',
-    },
+    { title: 'Title', dataIndex: 'title', key: 'title' },
+    { title: 'Category', dataIndex: 'category', key: 'category' },
+    { title: 'Author', dataIndex: 'author', key: 'author' },
+    { title: 'Created At', dataIndex: 'createdAt', key: 'createdAt' },
+    { title: 'Action', key: 'action' },
 ];
 
-// Sample data - in real application, this would come from an API
-const blogPosts = ref([
-    {
-        id: 1,
-        title: 'Vue 3 Best Practices',
-        category: 'Technology',
-        author: 'John Doe',
-        createdAt: '2024-02-23',
-    },
-    {
-        id: 2,
-        title: 'Getting Started with Ant Design Vue',
-        category: 'Technology',
-        author: 'Jane Smith',
-        createdAt: '2024-02-22',
-    },
-]);
+const fetchPosts = async () => {
+    try {
+        const response = await fetch('http://localhost:8080/api/v1/posts');
+        if (!response.ok) {
+            throw new Error("Failed to fetch blog posts");
+        }
+        const data = await response.json();
+        blogPosts.value = data;
+    } catch (error) {
+        message.error("Failed to load blog posts");
+        console.error("Error fetching blog posts:", error);
+    }
+};
+
+const handleSearch = () => {
+    fetchPosts();
+    if (searchQuery.value) {
+        blogPosts.value = blogPosts.value.filter(post =>
+            post.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+        );
+    }
+};
 
 const editBlog = (record) => {
     console.log('Edit blog:', record);
@@ -88,4 +78,6 @@ const deleteBlog = (record) => {
     message.success('Blog post deleted successfully!');
     // Implement delete functionality
 };
+
+onMounted(fetchPosts);
 </script>
