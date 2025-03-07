@@ -3,6 +3,7 @@ import Post from "../models/Post.js";
 import bcrypt from "bcrypt";
 import multer from "multer";
 import { storage } from "../helpers/MulterStorage.js";
+import verifyToken from "../middlewares/verifyToken.js";
 
 //get All Users -- api/v1/posts
 export const getAllPosts = asyncHandler(async (req, res) => {
@@ -34,6 +35,7 @@ const upload = multer({ storage });
 
 export const createPost = [
   upload.single("image"),
+  verifyToken,
   asyncHandler(async (req, res) => {
     const { title, description, category } = req.body;
 
@@ -90,28 +92,31 @@ export const deletePost = asyncHandler(async (req, res) => {
 
 //update user - api/v1/users/:id
 
-export const updatePost = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { title, description, category, image } = req.body;
+export const updatePost = [
+  verifyToken,
+  asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { title, description, category, image } = req.body;
 
-  if (!title) {
-    return res.status(400).json({ message: "Title is required" });
-  } else if (!description) {
-    return res.status(400).json({ message: "Description is required" });
-  } else if (!category) {
-    return res.status(400).json({ message: "Category is required" });
-  }
+    if (!title) {
+      return res.status(400).json({ message: "Title is required" });
+    } else if (!description) {
+      return res.status(400).json({ message: "Description is required" });
+    } else if (!category) {
+      return res.status(400).json({ message: "Category is required" });
+    }
 
-  const updatedPost = await User.findByIdAndUpdate(
-    id,
-    {
-      title,
-      description,
-      category,
-      image,
-    },
-    { new: true }
-  );
+    const updatedPost = await User.findByIdAndUpdate(
+      id,
+      {
+        title,
+        description,
+        category,
+        image,
+      },
+      { new: true }
+    );
 
-  res.status(200).json({ message: "Post updated successfully", updatedPost });
-});
+    res.status(200).json({ message: "Post updated successfully", updatedPost });
+  }),
+];
