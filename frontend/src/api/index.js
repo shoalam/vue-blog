@@ -46,3 +46,50 @@ export const fetchAuthorInfo = async (authorName) => {
     (author) => author.name.toLowerCase() === authorName.toLowerCase()
   );
 };
+
+// Update blog post
+export const updateBlog = async (id, blogData) => {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  // In production, this would make a PUT request to the backend
+  // return fetch(`http://localhost:3001/api/v1/posts/${id}`, {
+  //   method: 'PUT',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify(blogData),
+  // }).then(res => res.json());
+  return { success: true, id, ...blogData };
+};
+
+// Delete blog post
+export const deleteBlog = async (id) => {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  // In production, this would make a DELETE request to the backend
+  // return fetch(`http://localhost:3001/api/v1/posts/${id}`, {
+  //   method: 'DELETE',
+  // }).then(res => res.json());
+  return { success: true, id };
+};
+
+// Update user profile
+export const updateProfile = async (userData) => {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  // In production, this would make a PUT request to the backend
+  // return fetch('http://localhost:3001/api/v1/users/profile', {
+  //   method: 'PUT',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify(userData),
+  // }).then(res => res.json());
+  return { success: true, ...userData };
+};
+
+// Change password
+export const changePassword = async (passwordData) => {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  // In production, this would make a POST request to the backend
+  // return fetch('http://localhost:3001/api/v1/users/change-password', {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify(passwordData),
+  // }).then(res => res.json());
+  return { success: true };
+};
+

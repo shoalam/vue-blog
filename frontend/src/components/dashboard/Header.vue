@@ -50,7 +50,6 @@
 
 <script setup>
 import { ref } from "vue";
-import { MenuOutlined, CloseOutlined, UserOutlined, SettingOutlined, LogoutOutlined, DownOutlined } from "@ant-design/icons-vue";
 
 const user = ref({
   name: "John Doe",

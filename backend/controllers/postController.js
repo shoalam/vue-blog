@@ -90,9 +90,10 @@ export const deletePost = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Post deleted successfully", post });
 });
 
-//update user - api/v1/users/:id
+//update post - api/v1/posts/:id
 
 export const updatePost = [
+  upload.single("image"),
   verifyToken,
   asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -106,17 +107,27 @@ export const updatePost = [
       return res.status(400).json({ message: "Category is required" });
     }
 
-    const updatedPost = await User.findByIdAndUpdate(
+    // Handle new image upload
+    const imageUrl = req.file
+      ? `/public/uploads/${req.file.filename}`
+      : image; // Keep existing image if no new upload
+
+    const updatedPost = await Post.findByIdAndUpdate(
       id,
       {
         title,
         description,
         category,
-        image,
+        image: imageUrl,
       },
       { new: true }
     );
 
+    if (!updatedPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
     res.status(200).json({ message: "Post updated successfully", updatedPost });
   }),
 ];
+

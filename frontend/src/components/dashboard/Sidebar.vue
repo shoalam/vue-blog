@@ -43,11 +43,6 @@
 <script setup>
 import { h, ref } from "vue";
 import { RouterLink } from "vue-router";
-import {
-  DashboardOutlined,
-  FileTextOutlined,
-  UserOutlined,
-} from "@ant-design/icons-vue";
 
 const theme = ref("light");
 const selectedKeys = ref(["dashboard"]);
@@ -56,13 +51,13 @@ const openKeys = ref(["manage-posts"]);
 const items = ref([
   {
     key: "dashboard",
-    icon: h(DashboardOutlined),
+    icon: "",
     label: h(RouterLink, { to: "/dashboard" }, () => "Dashboard"),
     title: "Dashboard",
   },
   {
     key: "manage-posts",
-    icon: h(FileTextOutlined),
+    icon: "",
     label: "Manage Posts",
     title: "Manage Posts",
     children: [
@@ -85,7 +80,7 @@ const items = ref([
   },
   {
     key: "users-list",
-    icon: h(UserOutlined),
+    icon: "",
     label: h(RouterLink, { to: "/users" }, () => "Users List"),
     title: "Users List",
   },

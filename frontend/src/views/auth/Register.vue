@@ -105,25 +105,44 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
+
+const router = useRouter()
+const { register: authRegister } = useAuth()
 
 const loading = ref(false)
+const errors = ref({})
 const form = reactive({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
+    username: '',
     acceptTerms: false
 })
 
 const handleSubmit = async () => {
     loading.value = true
+    errors.value = {}
+
     try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        console.log('Form submitted:', form)
-        // Here you would typically make an API call to create the user
+        const result = await authRegister({
+            firstName: form.firstName,
+            lastName: form.lastName,
+            email: form.email,
+            password: form.password,
+            username: form.username || undefined,
+        })
+
+        if (result.success) {
+            alert('Registration successful! Please login.')
+            router.push('/auth/login')
+        } else {
+            errors.value.general = result.error || 'Registration failed'
+        }
     } catch (error) {
-        console.error('Error:', error)
+        errors.value.general = 'An error occurred. Please try again.'
     } finally {
         loading.value = false
     }

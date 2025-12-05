@@ -126,9 +126,13 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
+const route = useRoute()
+const { login: authLogin } = useAuth()
+
 const email = ref('')
 const password = ref('')
 const rememberMe = ref(false)
@@ -158,16 +162,20 @@ const handleLogin = async () => {
     if (!validateForm()) return
 
     loading.value = true
+    errors.value = {}
+
     try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500))
+        const result = await authLogin(email.value, password.value)
 
-        // Here you would typically make your API call
-        // const response = await loginUser(email.value, password.value)
-
-        router.push('/')
+        if (result.success) {
+            // Redirect to intended page or dashboard
+            const redirect = route.query.redirect || '/dashboard'
+            router.push(redirect)
+        } else {
+            errors.value.general = result.error || 'Invalid email or password'
+        }
     } catch (error) {
-        errors.value.general = 'Invalid email or password'
+        errors.value.general = 'An error occurred. Please try again.'
     } finally {
         loading.value = false
     }

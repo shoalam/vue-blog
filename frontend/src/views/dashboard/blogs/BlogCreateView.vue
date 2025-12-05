@@ -84,6 +84,9 @@
 
 <script setup>
 import { ref } from "vue";
+import { useAuth } from "@/composables/useAuth";
+
+const { getAuthHeader } = useAuth();
 
 const form = ref({
     title: "",
@@ -119,9 +122,12 @@ const submitPost = async () => {
     };
 
     try {
-        const response = await fetch("http://localhost:8080/api/v1/posts", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/posts`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json",
+                ...getAuthHeader()
+            },
             body: JSON.stringify(postData),
         });
 
@@ -143,3 +149,4 @@ const submitPost = async () => {
     @apply mb-4;
 }
 </style>
+
