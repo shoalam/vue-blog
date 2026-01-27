@@ -1,5 +1,5 @@
 <template>
-    <header class="bg-white dark:bg-gray-800 shadow-md">
+    <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-md">
         <nav class="container mx-auto px-4 py-3">
             <div class="flex justify-between items-center">
                 <!-- Logo -->
@@ -26,7 +26,7 @@
                     </button>
 
                     <!-- Auth Buttons -->
-                    <div class="hidden md:flex space-x-2">
+                    <div class="hidden md:flex space-x-2" v-if="!isAuthenticated">
                         <router-link to="/auth/login"
                             class="text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-md transition-all duration-200">
                             Login
@@ -35,6 +35,18 @@
                             class="text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-md transition-all duration-200">
                             Register
                         </router-link>
+                    </div>
+
+                    <!-- User Menu (when authenticated) -->
+                    <div class="hidden md:flex items-center space-x-2" v-else>
+                        <router-link to="/dashboard"
+                            class="text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-md transition-all duration-200">
+                            Dashboard
+                        </router-link>
+                        <button @click="handleLogout"
+                            class="text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md transition-all duration-200">
+                            Logout
+                        </button>
                     </div>
 
                     <!-- Mobile Menu Button -->
@@ -62,8 +74,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import MobileMenu from './MobileMenu.vue'
+import { useAuth } from '@/composables/useAuth'
+import { useMessage } from 'naive-ui'
 
 const props = defineProps({
     isDark: {
@@ -74,6 +89,9 @@ const props = defineProps({
 
 defineEmits(['toggle-theme'])
 
+const router = useRouter()
+const message = useMessage()
+const { isAuthenticated, logout } = useAuth()
 const isMenuOpen = ref(false)
 
 const navItems = [
@@ -82,4 +100,14 @@ const navItems = [
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' }
 ]
+
+const handleLogout = async () => {
+    try {
+        await logout()
+        message.success('Logged out successfully')
+        router.push('/')
+    } catch (error) {
+        message.error('Logout failed')
+    }
+}
 </script>

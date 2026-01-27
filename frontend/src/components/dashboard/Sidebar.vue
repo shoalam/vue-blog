@@ -1,100 +1,120 @@
-<template lang="">
-  <!-- Sidebar -->
-  <aside
-    class="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-200 ease-in-out"
+<template>
+  <n-layout-sider
+    collapse-mode="width"
+    :collapsed-width="64"
+    :width="240"
+    :collapsed="collapsed"
+    bordered
+    @update:collapsed="$emit('update:collapsed', $event)"
   >
     <div class="flex flex-col h-full">
-      <!-- Logo -->
-      <div class="p-4 border-b dark:border-gray-700">
-        <router-link to="/" class="flex items-center space-x-2">
-          <img src="@/assets/logo.svg" alt="Logo" class="w-6 h-6" />
-          <span class="text-lg font-bold text-gray-800 dark:text-white"
+      <!-- Logo Section (Matching Header Height) -->
+      <div class="h-16 flex items-center px-4 border-b border-gray-100 dark:border-gray-800">
+        <router-link to="/" class="flex items-center gap-3 overflow-hidden">
+          <n-icon size="32" color="#4f46e5">
+            <LogoIonic />
+          </n-icon>
+          <span v-if="!collapsed" class="text-xl font-bold text-gray-800 dark:text-white whitespace-nowrap tracking-tight"
             >Blog CMS</span
           >
         </router-link>
       </div>
 
       <!-- Navigation -->
-      <nav class="flex-1 space-y-2 overflow-y-auto">
-        <a-menu
-          v-model:openKeys="openKeys"
-          v-model:selectedKeys="selectedKeys"
-          style="width: 256px"
-          mode="inline"
-          :theme="theme"
-          :items="items"
+      <div class="flex-1 py-4 overflow-y-auto">
+        <n-menu
+          v-model:value="activeKey"
+          :collapsed="collapsed"
+          :collapsed-width="64"
+          :collapsed-icon-size="22"
+          :options="menuOptions"
         />
-    </nav>
+      </div>
 
-<!-- User Profile -->
-<!-- <div class="p-4 border-t dark:border-gray-700">
-                    <div class="flex items-center space-x-3">
-                        <img :src="user.avatar || '/default-avatar.png'" alt="User avatar"
-                            class="w-10 h-10 rounded-full">
-                        <div>
-                            <p class="font-medium text-gray-800 dark:text-white">{{ user.name }}</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ user.role }}</p>
-                        </div>
-                    </div>
-                </div> -->
-</div>
-</aside>
+      <!-- Footer User Profile -->
+      <div class="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
+        <div class="flex items-center gap-3">
+          <n-avatar round size="medium" src="https://i.pravatar.cc/150" />
+          <div v-if="!collapsed" class="overflow-hidden">
+            <p class="text-sm font-bold text-gray-800 dark:text-gray-200 truncate">{{ userName }}</p>
+            <p class="text-xs text-gray-500 truncate">{{ userRole }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </n-layout-sider>
 </template>
+
 <script setup>
-import { h, ref } from "vue";
-import { RouterLink } from "vue-router";
+import { h, ref, computed, watch } from "vue";
+import { RouterLink, useRoute } from "vue-router";
+import { NIcon } from "naive-ui";
+import { useAuth } from "@/composables/useAuth";
 import {
-  DashboardOutlined,
-  FileTextOutlined,
-  UserOutlined,
-} from "@ant-design/icons-vue";
+  GridOutline,
+  BookOutline,
+  AddOutline,
+  ListOutline,
+  PeopleOutline,
+  LogoIonic
+} from "@vicons/ionicons5";
 
-const theme = ref("light");
-const selectedKeys = ref(["dashboard"]);
-const openKeys = ref(["manage-posts"]);
+const props = defineProps({
+  collapsed: Boolean
+});
 
-const items = ref([
+const emit = defineEmits(['update:collapsed']);
+
+const { user } = useAuth();
+const route = useRoute();
+const activeKey = ref(route.name);
+
+const userName = computed(() => {
+  if (!user.value) return 'Guest';
+  return user.value.firstName && user.value.lastName 
+    ? `${user.value.firstName} ${user.value.lastName}` 
+    : user.value.email || 'User';
+});
+
+const userRole = computed(() => {
+  return user.value?.role || 'Administrator';
+});
+
+watch(() => route.name, (newName) => {
+  activeKey.value = newName;
+});
+
+function renderIcon(icon) {
+  return () => h(NIcon, null, { default: () => h(icon) });
+}
+
+const menuOptions = [
   {
+    label: () => h(RouterLink, { to: { name: "dashboard" } }, { default: () => "Dashboard" }),
     key: "dashboard",
-    icon: h(DashboardOutlined),
-    label: h(RouterLink, { to: "/dashboard" }, () => "Dashboard"),
-    title: "Dashboard",
+    icon: renderIcon(GridOutline)
   },
   {
-    key: "manage-posts",
-    icon: h(FileTextOutlined),
     label: "Manage Posts",
-    title: "Manage Posts",
+    key: "manage-posts",
+    icon: renderIcon(BookOutline),
     children: [
       {
-        key: "add-post",
-        label: h(RouterLink, { to: "/dashboard/blogs/create" }, () => "Add Post"),
-        title: "Add Post",
+        label: () => h(RouterLink, { to: { name: "create-blog" } }, { default: () => "Add Post" }),
+        key: "create-blog",
+        icon: renderIcon(AddOutline)
       },
       {
-        key: "post-list",
-        label: h(RouterLink, { to: "/dashboard/blogs" }, () => "Post List"),
-        title: "Post List",
-      },
-      {
-        key: "edit-post",
-        label: h(RouterLink, { to: `/dashboard/blogs/edit/` }, () => "Edit Post"),
-        title: "Edit Post",
-      },
-    ],
+        label: () => h(RouterLink, { to: { name: "dashboard-blogs" } }, { default: () => "Post List" }),
+        key: "dashboard-blogs",
+        icon: renderIcon(ListOutline)
+      }
+    ]
   },
   {
-    key: "users-list",
-    icon: h(UserOutlined),
-    label: h(RouterLink, { to: "/users" }, () => "Users List"),
-    title: "Users List",
-  },
-]);
-
-const changeTheme = (checked) => {
-  theme.value = checked ? "dark" : "light";
-};
-
-
+    label: () => h(RouterLink, { to: { name: "dashboard-users" } }, { default: () => "Users List" }),
+    key: "dashboard-users",
+    icon: renderIcon(PeopleOutline)
+  }
+];
 </script>
-<style lang=""></style>

@@ -1,64 +1,95 @@
 <template>
-    <div>
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <a-card :bordered="false">
-                <p class="text-lg font-semibold">Total Posts</p>
-                <p class="text-2xl font-bold">{{ totalPosts }}</p>
-            </a-card>
-            <a-card :bordered="false">
-                <p class="text-lg font-semibold">Published Posts</p>
-                <p class="text-2xl font-bold">{{ publishedPosts }}</p>
-            </a-card>
-            <a-card :bordered="false">
-                <p class="text-lg font-semibold">Draft Posts</p>
-                <p class="text-2xl font-bold">{{ draftPosts }}</p>
-            </a-card>
-            <a-card :bordered="false">
-                <p class="text-lg font-semibold">Total Views</p>
-                <p class="text-2xl font-bold">{{ totalViews }}</p>
-            </a-card>
-        </div>
+  <div class="space-y-6">
+    <!-- Statistics Cards -->
+    <n-grid cols="1 s:2 m:4" responsive="screen" :x-gap="12" :y-gap="12">
+      <n-gi>
+        <n-card bordered size="small">
+          <n-statistic label="Total Posts" :value="totalPosts">
+            <template #prefix>
+              <n-icon>
+                <BookOutline />
+              </n-icon>
+            </template>
+          </n-statistic>
+        </n-card>
+      </n-gi>
+      <n-gi>
+        <n-card bordered size="small">
+          <n-statistic label="Published" :value="publishedPosts">
+            <template #prefix>
+              <n-icon color="#18a058">
+                <CheckmarkCircleOutline />
+              </n-icon>
+            </template>
+          </n-statistic>
+        </n-card>
+      </n-gi>
+      <n-gi>
+        <n-card bordered size="small">
+          <n-statistic label="Drafts" :value="draftPosts">
+            <template #prefix>
+              <n-icon color="#f0a020">
+                <DocumentTextOutline />
+              </n-icon>
+            </template>
+          </n-statistic>
+        </n-card>
+      </n-gi>
+      <n-gi>
+        <n-card bordered size="small">
+          <n-statistic label="Total Views" :value="totalViews">
+            <template #prefix>
+              <n-icon color="#2080f0">
+                <EyeOutline />
+              </n-icon>
+            </template>
+          </n-statistic>
+        </n-card>
+      </n-gi>
+    </n-grid>
 
-        <a-card>
-            <div class="flex flex-wrap justify-between gap-6 mb-6">
-                <h2 class="text-4xl font-bold text-black">Recent Posts</h2>
-                <a-input v-model:value="searchQuery" placeholder="Search by Post Title" style="width: 300px"
-                    @change="handleSearch" />
-            </div>
-            <!-- Recent Posts Table -->
-            <a-table :columns="columns" :data-source="filteredPosts" :pagination="pagination" rowKey="id" bordered>
-                <template #bodyCell="{ column, record }">
-                    <template v-if="column.dataIndex === 'title'">
-                        <RouterLink :to="`/post/${record.id}`" class="text-blue-500">
-                            {{ record.title }}
-                        </RouterLink>
-                    </template>
-                    <template v-if="column.dataIndex === 'status'">
-                        <a-tag :color="record.status === 'Published' ? 'green' : 'orange'">
-                            {{ record.status }}
-                        </a-tag>
-                    </template>
-                    <template v-if="column.dataIndex === 'views'">
-                        {{ record.views }}
-                    </template>
-                </template>
-            </a-table>
-        </a-card>
+    <!-- Recent Posts Section -->
+    <n-card title="Recent Posts" bordered>
+      <template #header-extra>
+        <n-input
+          v-model:value="searchQuery"
+          placeholder="Search by Post Title..."
+          clearable
+          @input="handleSearch"
+          style="width: 300px"
+        >
+          <template #prefix>
+            <n-icon>
+              <SearchOutline />
+            </n-icon>
+          </template>
+        </n-input>
+      </template>
 
-        <!-- Search Bar -->
-        <!-- <div class="mb-4 flex justify-between items-center">
-            <a-input v-model:value="searchQuery" placeholder="Search by Post Title" style="width: 300px"
-                @change="handleSearch" />
-        </div> -->
-
-
-    </div>
+      <n-data-table
+        :columns="columns"
+        :data="paginatedPosts"
+        :pagination="pagination"
+        :bordered="false"
+        :single-line="false"
+      />
+    </n-card>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, h } from "vue";
 import { RouterLink } from "vue-router";
+import { NTag, NButton, NSpace, NIcon } from "naive-ui";
+import {
+  BookOutline,
+  CheckmarkCircleOutline,
+  DocumentTextOutline,
+  EyeOutline,
+  SearchOutline,
+  CreateOutline,
+  TrashOutline
+} from "@vicons/ionicons5";
 
 // Dashboard Statistics
 const totalPosts = ref(45);
@@ -73,40 +104,109 @@ const posts = ref([
     { id: 3, title: "Ant Design Vue Components", status: "Published", views: 500 },
     { id: 4, title: "Using Pinia for State Management", status: "Published", views: 290 },
     { id: 5, title: "SEO Optimization in Nuxt", status: "Draft", views: 180 },
+    { id: 6, title: "Building Scalable Vue Apps", status: "Published", views: 420 },
+    { id: 7, title: "Vue Router Deep Dive", status: "Published", views: 310 },
+    { id: 8, title: "Composition API Guide", status: "Draft", views: 95 },
 ]);
 
-// Table Configuration
+const searchQuery = ref("");
+const pagination = ref({
+  pageSize: 5
+});
+
+// Table Columns
 const columns = [
-    { title: "Title", dataIndex: "title", key: "title" },
-    { title: "Status", dataIndex: "status", key: "status" },
-    { title: "Views", dataIndex: "views", key: "views" },
-    { title: "Action", dataIndex: "action", key: "action" },
+  {
+    title: "Title",
+    key: "title",
+    render(row) {
+      const blogId = row._id || row.id;
+      return h(
+        RouterLink,
+        { to: `/blog/${blogId}`, class: "text-indigo-600 hover:text-indigo-800" },
+        { default: () => row.title }
+      );
+    }
+  },
+  {
+    title: "Status",
+    key: "status",
+    render(row) {
+      return h(
+        NTag,
+        {
+          type: row.status === "Published" ? "success" : "warning",
+          round: true,
+          size: "small"
+        },
+        { default: () => row.status }
+      );
+    }
+  },
+  {
+    title: "Views",
+    key: "views"
+  },
+  {
+    title: "Actions",
+    key: "actions",
+    render(row) {
+      return h(NSpace, null, {
+        default: () => [
+          h(
+            NButton,
+            {
+              size: "small",
+              quaternary: true,
+              circle: true,
+              onClick: () => {} // Edit logic here or use RouterLink
+            },
+            { default: () => h(NIcon, null, { default: () => h(CreateOutline) }) }
+          ),
+          h(
+            NButton,
+            {
+              size: "small",
+              quaternary: true,
+              circle: true,
+              type: "error",
+              onClick: () => deletePost(row._id || row.id)
+            },
+            { default: () => h(NIcon, null, { default: () => h(TrashOutline) }) }
+          )
+        ]
+      });
+    }
+  }
 ];
 
-const searchQuery = ref("");
-
-// Filtered Data for Searching
+// Content of Filtered Data for Searching
 const filteredPosts = computed(() =>
     posts.value.filter(post =>
         post.title.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
 );
 
-// Pagination Configuration
-const pagination = ref({
-    pageSize: 5,
-    showSizeChanger: true,
-    pageSizeOptions: ["5", "10", "20"],
-});
+const paginatedPosts = computed(() => filteredPosts.value);
 
 // Handle Search
 const handleSearch = () => {
-    // Since `filteredPosts` is reactive, it updates automatically
+    // Naive UI data table handles internal searching if we provide search function
+    // but here we are using computed for simplicity and consistency with old code
+};
+
+// Delete Post
+const deletePost = (id) => {
+    if (confirm('Are you sure you want to delete this post?')) {
+        const index = posts.value.findIndex(post => post.id === id);
+        if (index !== -1) {
+            posts.value.splice(index, 1);
+            totalPosts.value--;
+        }
+    }
 };
 </script>
 
 <style scoped>
-.a-card {
-    @apply shadow-lg p-4 rounded-lg border border-gray-200;
-}
+/* Additional custom styles if needed */
 </style>

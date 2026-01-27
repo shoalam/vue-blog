@@ -42,8 +42,67 @@ export const login = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Login successful", token, loggedInUser });
 });
 
+//register
+export const register = asyncHandler(async (req, res) => {
+  const { firstName, lastName, email, password, username } = req.body;
+
+  // Validation
+  if (!firstName) {
+    return res.status(400).json({ message: "First name is required" });
+  } else if (!lastName) {
+    return res.status(400).json({ message: "Last name is required" });
+  } else if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  } else if (!password) {
+    return res.status(400).json({ message: "Password is required" });
+  }
+
+  // Check if user already exists
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return res.status(400).json({ message: "User already exists with this email" });
+  }
+
+  // Check username uniqueness if provided
+  if (username) {
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ message: "Username already taken" });
+    }
+  }
+
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Create user
+  const newUser = await User.create({
+    firstName,
+    lastName,
+    email,
+    password: hashedPassword,
+    username: username || null,
+    name: `${firstName} ${lastName}`, // For backward compatibility
+  });
+
+  if (!newUser) {
+    return res.status(400).json({ message: "Failed to create user" });
+  }
+
+  res.status(201).json({
+    message: "User registered successfully",
+    user: {
+      id: newUser._id,
+      firstName: newUser.firstName,
+      lastName: newUser.lastName,
+      email: newUser.email,
+      username: newUser.username,
+    }
+  });
+});
+
 //logout
 
 export const logout = asyncHandler(async (req, res) => {
   res.clearCookie("accessToken").json({ message: "Successfully logged out" });
 });
+

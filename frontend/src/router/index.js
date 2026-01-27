@@ -54,90 +54,78 @@ const router = createRouter({
       ],
     },
 
-    // Dashboard Routes
+    // Dashboard Routes (Protected)
     {
       path: "/dashboard",
       component: () => import("@/components/layouts/DashboardLayout.vue"),
-      // meta: { requiresAuth: true },
+      meta: { requiresAuth: true, title: 'Dashboard' },
       children: [
         {
           path: "",
           name: "dashboard",
           component: () => import("../views/dashboard/DashboardView.vue"),
+          meta: { requiresAuth: true, title: 'Overview' },
         },
         {
           path: "profile",
           name: "profile",
           component: () => import("../views/dashboard/ProfileView.vue"),
+          meta: { requiresAuth: true, title: 'User Profile' },
         },
         {
           path: "blogs",
+          meta: { requiresAuth: true, title: 'Blog Management' },
           children: [
             {
               path: "",
               name: "dashboard-blogs",
               component: () =>
                 import("../views/dashboard/blogs/BlogListView.vue"),
+              meta: { requiresAuth: true, title: 'All Posts' },
             },
             {
               path: "create",
               name: "create-blog",
               component: () =>
                 import("../views/dashboard/blogs/BlogCreateView.vue"),
+              meta: { requiresAuth: true, title: 'Create New Post' },
             },
             {
               path: "edit/:id",
               name: "edit-blog",
               component: () =>
                 import("../views/dashboard/blogs/BlogEditView.vue"),
+              meta: { requiresAuth: true, title: 'Edit Post' },
             },
           ],
         },
-        // Admin Routes
-        // {
-        //   path: "admin",
-        //   meta: { requiresAdmin: true },
-        //   children: [
-        //     {
-        //       path: "users",
-        //       name: "user-management",
-        //       component: () =>
-        //         import("../views/dashboard/admin/UserManagement.vue"),
-        //     },
-        //     {
-        //       path: "categories",
-        //       name: "category-management",
-        //       component: () =>
-        //         import("../views/dashboard/admin/CategoryManagement.vue"),
-        //     },
-        //     {
-        //       path: "settings",
-        //       name: "site-settings",
-        //       component: () =>
-        //         import("../views/dashboard/admin/SiteSettings.vue"),
-        //     },
-        //   ],
-        // },
+        {
+          path: "users",
+          name: "dashboard-users",
+          component: () => import("../views/dashboard/users/UserListView.vue"),
+          meta: { requiresAuth: true, title: 'Users List' },
+        },
       ],
     },
 
     // 404 Route
-    // {
-    //   path: "/:pathMatch(.*)*",
-    //   name: "not-found",
-    //   component: () => import("../views/NotFound.vue"),
-    // },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "not-found",
+      redirect: "/",
+    },
   ],
 });
 
 // Navigation Guards
 router.beforeEach(async (to, from, next) => {
-  const isAuthenticated = false; // Replace with your auth logic
-  const isAdmin = false; // Replace with your admin check logic
-
-  // Handle auth required routes
+  // Check if route requires authentication
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!isAuthenticated) {
+    // Check if user is authenticated
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      // Redirect to login with return URL
       next({
         name: "login",
         query: { redirect: to.fullPath },
@@ -146,15 +134,8 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  // Handle admin required routes
-  if (to.matched.some((record) => record.meta.requiresAdmin)) {
-    if (!isAdmin) {
-      next({ name: "dashboard" });
-      return;
-    }
-  }
-
   next();
 });
 
 export default router;
+
