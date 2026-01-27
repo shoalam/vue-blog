@@ -1,5 +1,5 @@
 <template>
-    <header class="bg-white dark:bg-gray-800 shadow-md">
+    <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-md">
         <nav class="container mx-auto px-4 py-3">
             <div class="flex justify-between items-center">
                 <!-- Logo -->
@@ -78,6 +78,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import MobileMenu from './MobileMenu.vue'
 import { useAuth } from '@/composables/useAuth'
+import { useMessage } from 'naive-ui'
 
 const props = defineProps({
     isDark: {
@@ -89,6 +90,7 @@ const props = defineProps({
 defineEmits(['toggle-theme'])
 
 const router = useRouter()
+const message = useMessage()
 const { isAuthenticated, logout } = useAuth()
 const isMenuOpen = ref(false)
 
@@ -100,7 +102,12 @@ const navItems = [
 ]
 
 const handleLogout = async () => {
-    await logout()
-    router.push('/')
+    try {
+        await logout()
+        message.success('Logged out successfully')
+        router.push('/')
+    } catch (error) {
+        message.error('Logout failed')
+    }
 }
 </script>

@@ -1,150 +1,182 @@
 <template>
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full mx-auto space-y-8">
-            <!-- Header -->
-            <div class="text-center">
-                <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
-                    Create your account
-                </h2>
-                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                    Already have an account?
-                    <a href="#" class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
-                        Sign in
-                    </a>
-                </p>
-            </div>
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-4 py-12">
+    <n-card class="max-w-md w-full shadow-xl" bordered>
+      <div class="text-center mb-8">
+        <n-icon size="48" class="text-indigo-600 mb-2">
+          <LogoIonic />
+        </n-icon>
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Create Account</h2>
+        <p class="text-gray-500 dark:text-gray-400 mt-2">
+          Already have an account?
+          <router-link :to="{ name: 'login' }" class="text-indigo-600 font-semibold hover:underline">
+            Sign in
+          </router-link>
+        </p>
+      </div>
 
-            <!-- Signup Form -->
-            <form class="mt-8 space-y-6" @submit.prevent="handleSubmit">
-                <div class="rounded-md shadow-sm space-y-4">
-                    <!-- Name Fields -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="firstName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                First Name
-                            </label>
-                            <input id="firstName" v-model="form.firstName" type="text" required
-                                class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:text-white" />
-                        </div>
-                        <div>
-                            <label for="lastName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Last Name
-                            </label>
-                            <input id="lastName" v-model="form.lastName" type="text" required
-                                class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:text-white" />
-                        </div>
-                    </div>
+      <n-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        label-placement="top"
+        size="large"
+        @submit.prevent="handleSubmit"
+      >
+        <n-grid :cols="2" :x-gap="12">
+          <n-gi>
+            <n-form-item label="First Name" path="firstName">
+              <n-input v-model:value="form.firstName" placeholder="John" clearable />
+            </n-form-item>
+          </n-gi>
+          <n-gi>
+            <n-form-item label="Last Name" path="lastName">
+              <n-input v-model:value="form.lastName" placeholder="Doe" clearable />
+            </n-form-item>
+          </n-gi>
+        </n-grid>
 
-                    <!-- Email Field -->
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Email address
-                        </label>
-                        <input id="email" v-model="form.email" type="email" required
-                            class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:text-white" />
-                    </div>
+        <n-form-item label="Email Address" path="email">
+          <n-input v-model:value="form.email" placeholder="john.doe@example.com" clearable>
+            <template #prefix>
+              <n-icon><MailOutline /></n-icon>
+            </template>
+          </n-input>
+        </n-form-item>
 
-                    <!-- Password Field -->
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Password
-                        </label>
-                        <input id="password" v-model="form.password" type="password" required
-                            class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:text-white" />
-                    </div>
-                </div>
+        <n-form-item label="Password" path="password">
+          <n-input
+            v-model:value="form.password"
+            type="password"
+            show-password-on="click"
+            placeholder="Min 6 characters"
+            clearable
+          >
+            <template #prefix>
+              <n-icon><LockClosedOutline /></n-icon>
+            </template>
+          </n-input>
+        </n-form-item>
 
-                <!-- Terms Checkbox -->
-                <div class="flex items-center">
-                    <input id="terms" v-model="form.acceptTerms" type="checkbox" required
-                        class="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400" />
-                    <label for="terms" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
-                        I agree to the
-                        <a href="#" class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
-                            Terms and Conditions
-                        </a>
-                    </label>
-                </div>
+        <n-form-item path="acceptTerms">
+          <n-checkbox v-model:checked="form.acceptTerms">
+            I agree to the <a href="#" class="text-indigo-600 hover:underline">Terms & Conditions</a>
+          </n-checkbox>
+        </n-form-item>
 
-                <!-- Submit Button -->
-                <div>
-                    <button type="submit" :disabled="loading"
-                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-offset-gray-900">
-                        {{ loading ? 'Creating account...' : 'Sign up' }}
-                    </button>
-                </div>
+        <n-button
+          type="primary"
+          block
+          size="large"
+          attr-type="submit"
+          :loading="loading"
+          class="font-bold mt-2"
+        >
+          Create Account
+        </n-button>
+      </n-form>
 
-                <!-- Social Login Section -->
-                <div class="mt-6">
-                    <div class="relative">
-                        <div class="absolute inset-0 flex items-center">
-                            <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
-                        </div>
-                        <div class="relative flex justify-center text-sm">
-                            <span class="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">
-                                Or continue with
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 grid grid-cols-2 gap-3">
-                        <button type="button"
-                            class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600">
-                            Google
-                        </button>
-                        <button type="button"
-                            class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600">
-                            GitHub
-                        </button>
-                    </div>
-                </div>
-            </form>
+      <div class="mt-8">
+        <div class="relative flex items-center justify-center mb-6">
+          <div class="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
+          <span class="px-4 text-xs text-gray-500 uppercase">Or continue with</span>
+          <div class="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
         </div>
-    </div>
+
+        <n-grid :cols="2" :x-gap="12">
+          <n-gi>
+            <n-button block quaternary bordered>
+              <template #icon>
+                <n-icon><LogoGoogle /></n-icon>
+              </template>
+              Google
+            </n-button>
+          </n-gi>
+          <n-gi>
+            <n-button block quaternary bordered>
+              <template #icon>
+                <n-icon><LogoGithub /></n-icon>
+              </template>
+              GitHub
+            </n-button>
+          </n-gi>
+        </n-grid>
+      </div>
+    </n-card>
+  </div>
 </template>
 
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+import { useMessage } from 'naive-ui'
+import {
+    MailOutline,
+    LockClosedOutline,
+    LogoGoogle,
+    LogoGithub,
+    LogoIonic
+} from '@vicons/ionicons5'
 
 const router = useRouter()
+const message = useMessage()
 const { register: authRegister } = useAuth()
 
+const formRef = ref(null)
 const loading = ref(false)
-const errors = ref({})
+
 const form = reactive({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
-    username: '',
     acceptTerms: false
 })
 
-const handleSubmit = async () => {
-    loading.value = true
-    errors.value = {}
-
-    try {
-        const result = await authRegister({
-            firstName: form.firstName,
-            lastName: form.lastName,
-            email: form.email,
-            password: form.password,
-            username: form.username || undefined,
-        })
-
-        if (result.success) {
-            alert('Registration successful! Please login.')
-            router.push('/auth/login')
-        } else {
-            errors.value.general = result.error || 'Registration failed'
-        }
-    } catch (error) {
-        errors.value.general = 'An error occurred. Please try again.'
-    } finally {
-        loading.value = false
+const rules = {
+    firstName: { required: true, message: 'First name is required', trigger: 'blur' },
+    lastName: { required: true, message: 'Last name is required', trigger: 'blur' },
+    email: [
+        { required: true, message: 'Email is required', trigger: 'blur' },
+        { type: 'email', message: 'Please enter a valid email', trigger: 'blur' }
+    ],
+    password: [
+        { required: true, message: 'Password is required', trigger: 'blur' },
+        { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' }
+    ],
+    acceptTerms: {
+        validator: (rule, value) => !!value,
+        message: 'You must accept the terms',
+        trigger: 'change'
     }
+}
+
+const handleSubmit = async () => {
+    formRef.value?.validate(async (errors) => {
+        if (!errors) {
+            loading.value = true
+            try {
+                const result = await authRegister({
+                    firstName: form.firstName,
+                    lastName: form.lastName,
+                    email: form.email,
+                    password: form.password,
+                    username: form.email.split('@')[0], // Simple username fallback
+                })
+
+                if (result.success) {
+                    message.success('Registration successful! Please login.')
+                    router.push({ name: 'login' })
+                } else {
+                    message.error(result.error || 'Registration failed')
+                }
+            } catch (error) {
+                console.error('Registration error:', error)
+                message.error('An unexpected error occurred. Please try again.')
+            } finally {
+                loading.value = false
+            }
+        }
+    })
 }
 </script>

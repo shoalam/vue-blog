@@ -58,46 +58,52 @@ const router = createRouter({
     {
       path: "/dashboard",
       component: () => import("@/components/layouts/DashboardLayout.vue"),
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, title: 'Dashboard' },
       children: [
         {
           path: "",
           name: "dashboard",
           component: () => import("../views/dashboard/DashboardView.vue"),
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Overview' },
         },
         {
           path: "profile",
           name: "profile",
           component: () => import("../views/dashboard/ProfileView.vue"),
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'User Profile' },
         },
         {
           path: "blogs",
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Blog Management' },
           children: [
             {
               path: "",
               name: "dashboard-blogs",
               component: () =>
                 import("../views/dashboard/blogs/BlogListView.vue"),
-              meta: { requiresAuth: true },
+              meta: { requiresAuth: true, title: 'All Posts' },
             },
             {
               path: "create",
               name: "create-blog",
               component: () =>
                 import("../views/dashboard/blogs/BlogCreateView.vue"),
-              meta: { requiresAuth: true },
+              meta: { requiresAuth: true, title: 'Create New Post' },
             },
             {
               path: "edit/:id",
               name: "edit-blog",
               component: () =>
                 import("../views/dashboard/blogs/BlogEditView.vue"),
-              meta: { requiresAuth: true },
+              meta: { requiresAuth: true, title: 'Edit Post' },
             },
           ],
+        },
+        {
+          path: "users",
+          name: "dashboard-users",
+          component: () => import("../views/dashboard/users/UserListView.vue"),
+          meta: { requiresAuth: true, title: 'Users List' },
         },
       ],
     },
