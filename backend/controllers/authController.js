@@ -30,16 +30,33 @@ export const login = asyncHandler(async (req, res) => {
 
   const token = jwt.sign(
     {
+      id: loggedInUser._id,
       email: loggedInUser.email,
-      password: loggedInUser.password,
+      role: loggedInUser.role,
     },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRE_IN }
   );
 
-  res.cookie("accessToken", token);
+  res.cookie("accessToken", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
 
-  res.status(200).json({ message: "Login successful", token, loggedInUser });
+  res.status(200).json({
+    message: "Login successful",
+    token,
+    user: {
+      id: loggedInUser._id,
+      firstName: loggedInUser.firstName,
+      lastName: loggedInUser.lastName,
+      email: loggedInUser.email,
+      role: loggedInUser.role,
+      username: loggedInUser.username,
+      avatar: loggedInUser.avatar,
+    }
+  });
 });
 
 //register

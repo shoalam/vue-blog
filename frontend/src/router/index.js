@@ -100,10 +100,23 @@ const router = createRouter({
           ],
         },
         {
+          path: "categories",
+          name: "dashboard-categories",
+          component: () =>
+            import("../views/dashboard/categories/CategoryListView.vue"),
+          meta: { requiresAuth: true, title: 'Category Management' },
+        },
+        {
           path: "users",
           name: "dashboard-users",
           component: () => import("../views/dashboard/users/UserListView.vue"),
           meta: { requiresAuth: true, title: 'Users List' },
+        },
+        {
+          path: "api-explorer",
+          name: "api-explorer",
+          component: () => import("../views/dashboard/ApiExplorerView.vue"),
+          meta: { requiresAuth: true, title: 'API Explorer' },
         },
       ],
     },

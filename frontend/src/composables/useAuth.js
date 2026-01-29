@@ -60,9 +60,9 @@ export const login = async (email, password) => {
 
         // Store token and user
         token.value = data.token;
-        user.value = data.loggedInUser;
+        user.value = data.user;
         localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.loggedInUser));
+        localStorage.setItem('user', JSON.stringify(data.user));
 
         return { success: true, data };
     } catch (error) {

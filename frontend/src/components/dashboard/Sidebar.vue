@@ -56,7 +56,9 @@ import {
   AddOutline,
   ListOutline,
   PeopleOutline,
-  LogoIonic
+  LogoIonic,
+  TerminalOutline,
+  LayersOutline
 } from "@vicons/ionicons5";
 
 const props = defineProps({
@@ -108,6 +110,11 @@ const menuOptions = [
         label: () => h(RouterLink, { to: { name: "dashboard-blogs" } }, { default: () => "Post List" }),
         key: "dashboard-blogs",
         icon: renderIcon(ListOutline)
+      },
+      {
+        label: () => h(RouterLink, { to: { name: "dashboard-categories" } }, { default: () => "Categories" }),
+        key: "dashboard-categories",
+        icon: renderIcon(LayersOutline)
       }
     ]
   },
@@ -115,6 +122,11 @@ const menuOptions = [
     label: () => h(RouterLink, { to: { name: "dashboard-users" } }, { default: () => "Users List" }),
     key: "dashboard-users",
     icon: renderIcon(PeopleOutline)
+  },
+  {
+    label: () => h(RouterLink, { to: { name: "api-explorer" } }, { default: () => "API Explorer" }),
+    key: "api-explorer",
+    icon: renderIcon(TerminalOutline)
   }
 ];
 </script>

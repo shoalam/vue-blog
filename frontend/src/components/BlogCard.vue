@@ -1,7 +1,11 @@
 <template>
     <article
         class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-        <!-- <img :src="blog.image" :alt="blog.title" class="w-full h-48 object-cover"> -->
+        <img 
+            :src="getImageUrl(blog.image)" 
+            :alt="blog.title" 
+            class="w-full h-48 object-cover"
+        >
         <div class="p-6">
             <div class="flex items-center mb-3">
                 <span
@@ -19,7 +23,7 @@
                 <div class="flex items-center">
                     <div class="text-sm">
                         <p class="text-gray-900 dark:text-gray-100 font-semibold">
-                            {{ blog.author }}
+                            {{ blog.author?.firstName ? `${blog.author.firstName} ${blog.author.lastName}` : blog.author?.username || 'Unknown Author' }}
                         </p>
                         <p class="text-gray-500 dark:text-gray-400">
                             {{ formatDate(blog.date) }}
@@ -46,6 +50,13 @@ defineProps({
         required: true
     }
 })
+
+const getImageUrl = (path) => {
+    if (!path) return ''
+    return path.startsWith('http') 
+        ? path 
+        : `${import.meta.env.VITE_API_URL}${path}`
+}
 
 const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-US', {

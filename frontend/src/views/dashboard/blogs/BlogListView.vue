@@ -20,24 +20,28 @@
       remote
       :loading="loading"
       :columns="columns"
-      :data="paginatedPosts"
+      :data="blogPosts"
       :pagination="pagination"
       :bordered="false"
       :single-line="false"
       @update:page="handlePageChange"
+      @update:page-size="handlePageSizeChange"
+      scroll-x="1000"
     />
   </n-card>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, h } from 'vue';
+import { ref, computed, onMounted, h, reactive } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
-import { NButton, NSpace, NIcon, NTag, useMessage } from 'naive-ui';
+import { NButton, NSpace, NIcon, NTag, useMessage, NPopconfirm } from 'naive-ui';
 import {
     SearchOutline,
     CreateOutline,
     TrashOutline,
+    CheckmarkCircleOutline,
+    DocumentTextOutline,
 } from '@vicons/ionicons5';
 
 const { getAuthHeader } = useAuth();
@@ -46,31 +50,46 @@ const message = useMessage();
 const blogPosts = ref([]);
 const searchQuery = ref("");
 const loading = ref(false);
-const pagination = ref({
+
+const pagination = reactive({
     page: 1,
-    pageSize: 5,
+    pageSize: 10,
+    itemCount: 0,
     showSizePicker: true,
-    pageSizes: [5, 10, 20, 50],
+    pageSizes: [10, 20, 50],
     onChange: (page) => {
-        pagination.value.page = page;
+        pagination.page = page;
+        fetchPosts();
     },
     onUpdatePageSize: (pageSize) => {
-        pagination.value.pageSize = pageSize;
-        pagination.value.page = 1;
+        pagination.pageSize = pageSize;
+        pagination.page = 1;
+        fetchPosts();
     }
 });
 
 const fetchPosts = async () => {
+    loading.value = true;
     try {
-        loading.value = true;
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/posts`, {
+        const url = new URL(`${import.meta.env.VITE_API_URL}/api/v1/posts`);
+        url.searchParams.append("page", pagination.page);
+        url.searchParams.append("limit", pagination.pageSize);
+        if (searchQuery.value) {
+            url.searchParams.append("search", searchQuery.value);
+        }
+
+        const response = await fetch(url.toString(), {
             headers: getAuthHeader()
         });
+
         if (!response.ok) {
             throw new Error("Failed to fetch blog posts");
         }
+
         const data = await response.json();
-        blogPosts.value = data;
+        // Backend returns { posts, total, page, limit, totalPages }
+        blogPosts.value = data.posts || [];
+        pagination.itemCount = data.total || 0;
     } catch (error) {
         console.error("Error fetching blog posts:", error);
         message.error("Failed to load blog posts. Please try again.");
@@ -80,14 +99,22 @@ const fetchPosts = async () => {
 };
 
 const handleSearch = () => {
-    pagination.value.page = 1;
+    pagination.page = 1;
+    fetchPosts();
+};
+
+const handlePageChange = (page) => {
+    pagination.page = page;
+    fetchPosts();
+};
+
+const handlePageSizeChange = (pageSize) => {
+    pagination.pageSize = pageSize;
+    pagination.page = 1;
+    fetchPosts();
 };
 
 const deleteBlog = async (record) => {
-    if (!confirm(`Are you sure you want to delete "${record.title}"?`)) {
-        return;
-    }
-
     try {
         const blogId = record._id || record.id;
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/posts/${blogId}`, {
@@ -100,7 +127,7 @@ const deleteBlog = async (record) => {
         }
 
         message.success('Blog post deleted successfully!');
-        await fetchPosts();
+        fetchPosts();
     } catch (error) {
         console.error("Error deleting blog post:", error);
         message.error("Failed to delete blog post. Please try again.");
@@ -119,6 +146,20 @@ const formatDate = (dateString) => {
 
 const columns = [
     {
+        title: 'Image',
+        key: 'image',
+        render(row) {
+            if (!row.image) return 'No Image';
+            const imageUrl = row.image.startsWith('http') 
+                ? row.image 
+                : `${import.meta.env.VITE_API_URL}/${row.image}`;
+            return h('img', {
+                src: imageUrl,
+                style: 'width: 40px; height: 40px; object-fit: cover; border-radius: 4px;'
+            });
+        }
+    },
+    {
         title: 'Title',
         key: 'title',
         render(row) {
@@ -132,17 +173,48 @@ const columns = [
     },
     {
         title: 'Category',
-        key: 'category'
+        key: 'category',
+        render(row) {
+            return row.category?.name || 'Uncategorized';
+        }
     },
     {
-        title: 'Author',
-        key: 'author'
+        title: 'Content Snippet',
+        key: 'description',
+        width: 300,
+        render(row) {
+            const text = row.description || '';
+            return text.length > 80 ? text.substring(0, 80) + '...' : text;
+        }
     },
     {
         title: 'Created At',
         key: 'createdAt',
         render(row) {
             return formatDate(row.createdAt);
+        }
+    },
+    {
+        title: 'Status',
+        key: 'status',
+        render(row) {
+            const isPublished = row.status === 'published';
+            return h(
+                NTag,
+                {
+                    type: isPublished ? 'success' : 'warning',
+                    round: true,
+                    bordered: false,
+                    size: 'small',
+                    class: 'px-3 font-bold'
+                },
+                { 
+                    default: () => h('div', { class: 'flex items-center gap-1' }, [
+                        h(NIcon, { size: '14' }, { default: () => h(isPublished ? CheckmarkCircleOutline : DocumentTextOutline) }),
+                        isPublished ? 'Published' : 'Draft'
+                    ])
+                }
+            );
         }
     },
     {
@@ -157,7 +229,6 @@ const columns = [
                             size: 'small',
                             quaternary: true,
                             circle: true,
-                            onClick: () => {} // Edit Navigation handled by router
                         },
                         { 
                             default: () => h(RouterLink, { to: `/dashboard/blogs/edit/${row._id || row.id}` }, {
@@ -166,30 +237,31 @@ const columns = [
                         }
                     ),
                     h(
-                        NButton,
+                        NPopconfirm,
                         {
-                            size: 'small',
-                            quaternary: true,
-                            circle: true,
-                            type: 'error',
-                            onClick: () => deleteBlog(row)
+                            onPositiveClick: () => deleteBlog(row),
+                            positiveText: 'Delete',
+                            negativeText: 'Cancel'
                         },
-                        { default: () => h(NIcon, null, { default: () => h(TrashOutline) }) }
+                        {
+                            trigger: () => h(
+                                NButton,
+                                {
+                                    size: 'small',
+                                    quaternary: true,
+                                    circle: true,
+                                    type: 'error',
+                                },
+                                { default: () => h(NIcon, null, { default: () => h(TrashOutline) }) }
+                            ),
+                            default: () => `Are you sure you want to delete "${row.title}"?`
+                        }
                     )
                 ]
             });
         }
     }
 ];
-
-const filteredPosts = computed(() => {
-    if (!searchQuery.value) return blogPosts.value;
-    return blogPosts.value.filter(post =>
-        post.title.toLowerCase().includes(searchQuery.value.toLowerCase())
-    );
-});
-
-const paginatedPosts = computed(() => filteredPosts.value);
 
 onMounted(fetchPosts);
 </script>

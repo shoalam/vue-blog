@@ -20,7 +20,7 @@ export const getPostComments = asyncHandler(async (req, res) => {
 export const createComment = asyncHandler(async (req, res) => {
     const { postId } = req.params;
     const { content, parentComment } = req.body;
-    const authorId = req.user?.id || req.body.authorId; // Get from auth or body for testing
+    const authorId = req.user.id;
 
     if (!content) {
         return res.status(400).json({ message: "Comment content is required" });
@@ -50,8 +50,8 @@ export const createComment = asyncHandler(async (req, res) => {
 //update comment - api/v1/comments/:id
 export const updateComment = asyncHandler(async (req, res) => {
     const { id } = req.params;
+    const userId = req.user.id;
     const { content } = req.body;
-    const userId = req.user?.id || req.body.userId; // Get from auth or body for testing
 
     if (!content) {
         return res.status(400).json({ message: "Comment content is required" });
@@ -64,7 +64,7 @@ export const updateComment = asyncHandler(async (req, res) => {
     }
 
     // Check if user is the author
-    if (comment.author.toString() !== userId) {
+    if (!comment.author || String(comment.author) !== String(userId)) {
         return res.status(403).json({ message: "You can only edit your own comments" });
     }
 
@@ -77,7 +77,7 @@ export const updateComment = asyncHandler(async (req, res) => {
 //delete comment - api/v1/comments/:id
 export const deleteComment = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const userId = req.user?.id || req.body.userId; // Get from auth or body for testing
+    const userId = req.user.id;
 
     const comment = await Comment.findById(id);
 
@@ -86,7 +86,7 @@ export const deleteComment = asyncHandler(async (req, res) => {
     }
 
     // Check if user is the author
-    if (comment.author.toString() !== userId) {
+    if (!comment.author || String(comment.author) !== String(userId)) {
         return res.status(403).json({ message: "You can only delete your own comments" });
     }
 
