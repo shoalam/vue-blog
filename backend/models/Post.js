@@ -23,8 +23,8 @@ const postSchema = new mongoose.Schema(
       default: "",
     },
     category: {
-      type: String,
-      trim: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
       required: true,
     },
     tags: {

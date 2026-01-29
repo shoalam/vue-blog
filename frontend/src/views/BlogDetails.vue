@@ -23,9 +23,11 @@
                 <!-- Author and Date Info -->
                 <div class="flex items-center gap-4 mb-6">
                     <div class="flex items-center gap-2">
-                        <img :src="getAuthorAvatar()" :alt="blog.author" class="w-10 h-10 rounded-full" />
+                        <img :src="getAuthorAvatar()" :alt="blog.author?.username" class="w-10 h-10 rounded-full object-cover" />
                         <div>
-                            <p class="font-medium text-gray-900 dark:text-white">{{ blog.author }}</p>
+                            <p class="font-medium text-gray-900 dark:text-white">
+                                {{ blog.author?.firstName ? `${blog.author.firstName} ${blog.author.lastName}` : blog.author?.username || 'Unknown Author' }}
+                            </p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
                                 {{ formatDate(blog.date) }}
                             </p>
@@ -50,10 +52,13 @@
                 </div>
             </header>
 
-            <!-- Featured Image -->
-            <!-- <div class="max-w-4xl mx-auto mb-12">
-                <img :src="blog.image" :alt="blog.title" class="w-full h-[400px] object-cover rounded-xl shadow-lg" />
-            </div> -->
+            <div v-if="blog.image" class="max-w-4xl mx-auto mb-12">
+                <img 
+                    :src="getImageUrl(blog.image)" 
+                    :alt="blog.title" 
+                    class="w-full h-[400px] object-cover rounded-xl shadow-lg" 
+                />
+            </div>
 
             <!-- Blog Content -->
             <div class="max-w-3xl mx-auto">
@@ -115,8 +120,22 @@ const readingTime = computed(() => {
 })
 
 const getAuthorAvatar = () => {
-    // You can replace this with actual author avatar logic
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(blog.value.author)}&background=random`
+    if (blog.value?.author?.avatar) {
+        return blog.value.author.avatar.startsWith('http') 
+            ? blog.value.author.avatar 
+            : `${import.meta.env.VITE_API_URL}${blog.value.author.avatar}`
+    }
+    const name = blog.value?.author?.firstName 
+        ? `${blog.value.author.firstName} ${blog.value.author.lastName}` 
+        : blog.value?.author?.username || 'User'
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`
+}
+
+const getImageUrl = (path) => {
+    if (!path) return ''
+    return path.startsWith('http') 
+        ? path 
+        : `${import.meta.env.VITE_API_URL}${path}`
 }
 
 const formatDate = (date) => {
